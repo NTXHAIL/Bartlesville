@@ -556,7 +556,7 @@ body {
     </div>
     <div class="form-body">
 
-      <form id="estimateForm" onsubmit="handleSubmit(event)" action="mailto:team@ntxhail.com" method="post" enctype="text/plain">
+      <form id="estimateForm" action="https://formspree.io/f/xqewejdd" method="POST">
         <div class="form-row">
           <div class="form-group">
             <label for="firstName">First Name</label>
@@ -640,38 +640,43 @@ body {
 </footer>
 
 <script>
-function handleSubmit(e) {
+document.getElementById('estimateForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  var f = e.target;
-  var firstName = f.firstName.value.trim();
-  var lastName  = f.lastName.value.trim();
-  var phone     = f.phone.value.trim();
-  var email     = f.email.value.trim();
-  var year      = f.year.value.trim();
-  var make      = f.make.value.trim();
-  var model     = f.model.value.trim();
+  var form = e.target;
+  var btn = form.querySelector('.btn-submit');
 
-  var subject = encodeURIComponent("Free Estimate Request – " + year + " " + make + " " + model + " – Bartlesville, OK");
-  var body = encodeURIComponent(
-    "New Estimate Request – Bartlesville, OK\n" +
-    "==========================================\n" +
-    "Name:    " + firstName + " " + lastName + "\n" +
-    "Phone:   " + phone + "\n" +
-    "Email:   " + email + "\n\n" +
-    "Vehicle:\n" +
-    "  Year:  " + year + "\n" +
-    "  Make:  " + make + "\n" +
-    "  Model: " + model + "\n"
-  );
+  // Disable button while submitting
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
 
-  window.location.href = "mailto:team@ntxhail.com?subject=" + subject + "&body=" + body;
+  var data = new FormData(form);
 
-  // Show success message, hide form and call section
-  f.style.display = "none";
-  var callSection = document.getElementById("callSection");
-  if (callSection) callSection.style.display = "none";
-  document.getElementById("successMsg").style.display = "block";
-}
+  try {
+    var response = await fetch('https://formspree.io/f/xqewejdd', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (response.ok) {
+      // Success — hide form and call section, show confirmation
+      form.style.display = 'none';
+      var callSection = document.getElementById('callSection');
+      if (callSection) callSection.style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    } else {
+      var json = await response.json();
+      var errors = json.errors ? json.errors.map(function(e){ return e.message; }).join(', ') : 'Submission failed. Please try again.';
+      alert('Error: ' + errors);
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/></svg> Request My Free Estimate';
+    }
+  } catch (err) {
+    alert('Network error. Please check your connection and try again.');
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/></svg> Request My Free Estimate';
+  }
+});
 </script>
 </body>
 </html>
