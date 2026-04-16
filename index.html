@@ -556,26 +556,26 @@ body {
     </div>
     <div class="form-body">
 
-      <form id="estimateForm" action="https://formspree.io/f/xqewejdd" method="POST">
+      <form id="estimateForm" action="https://formspree.io/f/mnjljryn" method="POST">
         <div class="form-row">
           <div class="form-group">
             <label for="firstName">First Name</label>
-            <input type="text" id="firstName" name="firstName" placeholder="John" required>
+            <input type="text" id="firstName" name="firstName" placeholder="John" required data-fs-field>
           </div>
           <div class="form-group">
             <label for="lastName">Last Name</label>
-            <input type="text" id="lastName" name="lastName" placeholder="Smith" required>
+            <input type="text" id="lastName" name="lastName" placeholder="Smith" required data-fs-field>
           </div>
         </div>
 
         <div class="form-group">
           <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" name="phone" placeholder="(405) 555-0000" required>
+          <input type="tel" id="phone" name="phone" placeholder="(405) 555-0000" required data-fs-field>
         </div>
 
         <div class="form-group">
           <label for="email">Email Address</label>
-          <input type="email" id="email" name="email" placeholder="john@example.com" required>
+          <input type="email" id="email" name="email" placeholder="john@example.com" required data-fs-field>
         </div>
 
         <div class="form-divider"></div>
@@ -583,20 +583,20 @@ body {
         <div class="form-row">
           <div class="form-group">
             <label for="year">Vehicle Year</label>
-            <input type="text" id="year" name="year" placeholder="2022" maxlength="4" required>
+            <input type="text" id="year" name="year" placeholder="2022" maxlength="4" required data-fs-field>
           </div>
           <div class="form-group">
             <label for="make">Make</label>
-            <input type="text" id="make" name="make" placeholder="Ford" required>
+            <input type="text" id="make" name="make" placeholder="Ford" required data-fs-field>
           </div>
         </div>
 
         <div class="form-group">
           <label for="model">Model</label>
-          <input type="text" id="model" name="model" placeholder="F-150" required>
+          <input type="text" id="model" name="model" placeholder="F-150" required data-fs-field>
         </div>
 
-        <button type="submit" class="btn-submit">
+        <button type="submit" class="btn-submit" data-fs-submit-btn>
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/></svg>
           Request My Free Estimate
         </button>
@@ -640,43 +640,18 @@ body {
 </footer>
 
 <script>
-document.getElementById('estimateForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  var form = e.target;
-  var btn = form.querySelector('.btn-submit');
-
-  // Disable button while submitting
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-
-  var data = new FormData(form);
-
-  try {
-    var response = await fetch('https://formspree.io/f/xqewejdd', {
-      method: 'POST',
-      body: data,
-      headers: { 'Accept': 'application/json' }
-    });
-
-    if (response.ok) {
-      // Success — hide form and call section, show confirmation
-      form.style.display = 'none';
+  window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+  formspree('initForm', {
+    formElement: '#estimateForm',
+    formId: 'mnjljryn',
+    onSuccess: function() {
+      document.getElementById('estimateForm').style.display = 'none';
       var callSection = document.getElementById('callSection');
       if (callSection) callSection.style.display = 'none';
       document.getElementById('successMsg').style.display = 'block';
-    } else {
-      var json = await response.json();
-      var errors = json.errors ? json.errors.map(function(e){ return e.message; }).join(', ') : 'Submission failed. Please try again.';
-      alert('Error: ' + errors);
-      btn.disabled = false;
-      btn.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/></svg> Request My Free Estimate';
     }
-  } catch (err) {
-    alert('Network error. Please check your connection and try again.');
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/></svg> Request My Free Estimate';
-  }
-});
+  });
 </script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </body>
 </html>
